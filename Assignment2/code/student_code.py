@@ -303,6 +303,7 @@ class PGDAttack(object):
     """
     # clone the input tensor and disable the gradients
     output = input.clone()
+    output.requires_grad = True
     input.requires_grad = False
 
     # loop over the number of steps
@@ -359,18 +360,15 @@ class GradAttention(object):
 
     #################################################################################
     # Fill in the code here
-    pred_scores = model(input)
-    values, indices = torch.max(pred_scores, 0)
-    pred_scores = pred_scores.gather(1, indices.view(-1, 1)).squeeze()
-    pred_scores.backward(torch.cuda.FloatTensor(pred_scores.size()).fill_(1))
-    # Gradient with respect to input image
-    sal = input.grad
-    sal = sal.abs()
-    # Maximum across all channels of the image
-    sal, _ = torch.max(sal, dim=1)
-    # Reshape into image size
-    sal = torch.reshape(sal, (sal.shape[0], 1, sal.shape[1], sal.shape[2]))
-    output = sal
+    ypred = model(input)
+    value, index = torch.max(ypred, 0)
+    ypred = ypred.gather(1, index.view(-1, 1)).squeeze()
+    ypred.backward(torch.cuda.FloatTensor(ypred.size()).fill_(1))
+    mag = input.grad
+    mag = mag.abs()
+    mag, _ = torch.max(mag, dim=1)
+    mag = torch.reshape(mag, (mag.shape[0], 1, mag.shape[1], mag.shape[2]))
+    output = mag
     #################################################################################
     
     return output
