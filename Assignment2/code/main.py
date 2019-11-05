@@ -77,8 +77,6 @@ parser.add_argument('--use-resnet18', action='store_true',
                     help='Use pretrained resnet18 model')
 parser.add_argument('--gpu', default=0, type=int,
                     help='GPU ID to use.')
-parser.add_argument('-f', '--filename', dest='filename', default='checkpoint.pth.tar',
-                    help='the filename of model checkpoint')
 parser.add_argument('--use-adv-training', action='store_true',
                     help='Use adversarial training')
 
@@ -91,8 +89,8 @@ def main(args):
   best_acc1 = 0.0
 
   if args.gpu >= 0:
-    print("Use GPU: {}".format(args.gpu))
     torch.cuda.set_device(args.gpu)
+    print("Use GPU: {}".format(args.gpu))
   else:
     print('You are using CPU for computing!',
           'Yet we assume you are using a GPU.',
@@ -229,7 +227,7 @@ def main(args):
       'state_dict': model.state_dict(),
       'best_acc1': best_acc1,
       'optimizer' : optimizer.state_dict(),
-    }, is_best, filename=args.filename)
+    }, is_best)
 
 
 def save_checkpoint(state, is_best,
@@ -241,7 +239,7 @@ def save_checkpoint(state, is_best,
   if is_best:
     # skip the optimization state
     state.pop('optimizer', None)
-    torch.save(state, os.path.join(file_folder, 'best_'+filename))
+    torch.save(state, os.path.join(file_folder, 'model_best.pth.tar'))
 
 
 def train(train_loader, model, criterion, optimizer, epoch, stage, args):

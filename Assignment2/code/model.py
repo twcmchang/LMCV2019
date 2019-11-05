@@ -134,8 +134,10 @@ class MultiFCN(nn.Module):
 
         f = torch.cat((f1, f2, f3, f4), 1)
         f = self.avgpool(f)
+#         print(f.shape)
         
         f = f.view(f.size(0), -1)
+#         print(x.shape)
         f = self.fc(f)
         
 

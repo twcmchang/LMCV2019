@@ -12,8 +12,11 @@ num_imgs = 2
 in_channels = 3
 out_channels = 64
 kernel_size = 7
-stride = 2
-padding = 3
+#stride = 2
+#padding = 3
+stride =1
+padding = 0
+
 input_height = 12
 input_width = 12
 atol = 1e-05
@@ -47,6 +50,7 @@ ref_conv2d = torch.nn.functional.conv2d
 ref_output = ref_conv2d(input_feats, weight, bias, stride, padding)
 custom_output = custom_conv2d(input_feats, weight, bias, stride, padding)
 err = (custom_output - ref_output).abs().max()
+print(err)
 if err < atol:
   print("Fprop testing passed")
 else:
